@@ -1,0 +1,7 @@
+.idea/
+# Project exclude paths
+/project/project/target/
+/project/target/
+/target/
+/target/scala-0.24/classes/
+/target/scala-0.24/test-classes/
