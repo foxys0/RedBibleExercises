@@ -1,4 +1,4 @@
-import Chapter2.{fibonacci, isSorted}
+import Chapter2._
 import org.scalatest.funsuite.AnyFunSuite
 
 class Chapter2Test extends AnyFunSuite {
@@ -14,4 +14,16 @@ class Chapter2Test extends AnyFunSuite {
     assert(isSorted(Array("a", "b", "c"), _ < _) == true)
     assert(isSorted(Array("a", "c", "b"), _ < _) == false)
   }
+  
+  test("curry, uncurry, compose") {
+    val c = curry((a: Int, b: Int) => a + b)
+    val uc = uncurry((a: Int) => (b: Int) => a + b)
+    val hof = compose((b: Int) => b + 2, (a: Int) => a + 1)
+    
+    assert(c(1)(2) == 3)
+    assert(uc(1, 2) == 3)
+    assert(hof(0) == 3)
+  }
+  
+  
 }
