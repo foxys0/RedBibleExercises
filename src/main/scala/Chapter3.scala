@@ -9,15 +9,24 @@ object Chapter3 {
     case class Cons[+A](head: A, tail: MyList[A]) extends MyList[A]
 
     def apply[A](as: A*): MyList[A] = if (as.isEmpty) Nil else Cons(as.head, apply(as.tail: _*))
-    def sum(ints: MyList[Int]): Int = ints match {
+
+    def foldRight[A, B](myList: MyList[A], z: B)(f: (A, B) => B): B = myList match {
+      case Nil => z
+      case Cons(head, tail) => f(head, foldRight(tail, z)(f))
+    }
+
+    def sum(myList: MyList[Int]): Int = myList match {
       case Nil => 0
       case Cons(head, tail) => head + sum(tail)
     }
-    def product(ints: MyList[Int]): Int = ints match {
+    def product(myList: MyList[Int]): Int = myList match {
       case Nil => 1
       case Cons(0, _) => 0
       case Cons(head, tail) => head * product(tail)
     }
+
+    def sum2(myList: MyList[Int]): Int = foldRight(myList, 0)(_ + _)
+    def product2(myList: MyList[Int]): Int = foldRight(myList, 1)(_ * _)
 
     /** Exercise 1: Pattern matching */
     def patternMatching(myList: MyList[Int]): Int = myList match {
@@ -45,12 +54,45 @@ object Chapter3 {
       @tailrec
       def loop(xs: MyList[A], i: Int): MyList[A] = {
         val maybeTail = tail(xs)
-        if (maybeTail.isEmpty | i == 0) xs
+        if (maybeTail.isEmpty | i <= 0) xs
         else loop(maybeTail.get, i - 1)
       }
 
       loop(myList, n)
     }
+
+    /** Exercise 5: Removes first n elements until condition is met */
+    @tailrec
+    def dropWhile[A](myList: MyList[A])(f: A => Boolean): MyList[A] = myList match {
+      case Cons(head, tail) if f(head) => dropWhile(tail)(f)
+      case _ => myList
+    }
+
+    /** Exercise 6: Returns list without the last element */
+    def init[A](myList: MyList[A]): MyList[A] =
+      myList match {
+        case Nil => Nil
+        case Cons(_, Nil) => Nil
+        case Cons(head, tail) => Cons(head, init(tail))
+      }
+
+    /** Exercise 9: Computes length of list using foldRight */
+    def length[A](myList: MyList[Int]): Int = foldRight(myList, 0)((_, i) => i + 1)
+
+    /** Exercise 10: stack-safe foldRight */
+    @tailrec
+    def foldLeft[A, B](myList: MyList[A], z: B)(f: (B, A) => B): B = myList match {
+      case Nil => z
+      case Cons(head, tail) => foldLeft(tail, f(z, head))(f)
+    }
+
+    /** Exercise 11: sum, product, length using foldLeft */
+    def sum3(myList: MyList[Int]): Int = foldLeft(myList, 0)(_ + _)
+    def product3(myList: MyList[Int]): Int = foldLeft(myList, 1)(_ * _)
+    def length2[A](myList: MyList[Int]): Int = foldLeft(myList, 0)((i, _) => i + 1)
+
+
+
   }
 
 

@@ -4,32 +4,91 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class Chapter3Test extends AnyFunSuite {
 
+  case class TestList(l: MyList[Int], sum: Int, product: Int, length: Int)
+  
+  private val empty = TestList(MyList(), 0, 1, 0)
+  private val one = TestList(MyList(1), 1, 1, 1)
+  private val oneTwoThreeFour = TestList(MyList(1, 2, 3, 4), 10, 24, 4)
+  
+  test("sum, product") {
+    assert(sum(empty.l) == empty.sum)
+    assert(sum(one.l) == one.sum)
+    assert(sum(oneTwoThreeFour.l) == oneTwoThreeFour.sum)
+    assert(sum2(empty.l) == empty.sum)
+    assert(sum2(one.l) == one.sum)
+    assert(sum2(oneTwoThreeFour.l) == oneTwoThreeFour.sum)
+    assert(sum3(empty.l) == empty.sum)
+    assert(sum3(one.l) == one.sum)
+    assert(sum3(oneTwoThreeFour.l) == oneTwoThreeFour.sum)
+    assert(product(empty.l) == empty.product)
+    assert(product(one.l) == one.product)
+    assert(product(MyList(1, 2, 0, 4)) == 0)
+    assert(product(oneTwoThreeFour.l) == oneTwoThreeFour.product)
+    assert(product2(empty.l) == empty.product)
+    assert(product2(one.l) == one.product)
+    assert(product2(oneTwoThreeFour.l) == oneTwoThreeFour.product)
+    assert(product3(empty.l) == empty.product)
+    assert(product3(one.l) == one.product)
+    assert(product3(oneTwoThreeFour.l) == oneTwoThreeFour.product)
+  }
+
   test("patternMatching") {
-    assert(patternMatching(MyList(1, 2, 3, 4)) == 3)
-    assert(patternMatching(MyList()) == 42)
+    assert(patternMatching(empty.l) == 42)
+    assert(patternMatching(one.l) == one.sum)
+    assert(patternMatching(oneTwoThreeFour.l) == 3)
     assert(patternMatching(MyList(1, 2)) == 3)
   }
 
   test("tail") {
-    assert(tail(MyList(1, 2, 3)).contains(MyList(2, 3)))
+    assert(tail(empty.l).isEmpty)
+    assert(tail(oneTwoThreeFour.l).contains(MyList(2, 3, 4)))
     assert(tail(MyList("a", "b")).contains(MyList("b")))
     assert(tail(MyList("a")).contains(Nil))
-    assert(tail(MyList()).isEmpty)
   }
 
   test("setHead") {
     assert(setHead(2, MyList(1, 3, 4)).contains(MyList(2, 3, 4)))
+    assert(setHead("a", MyList("a", "b")).contains(MyList("a", "b")))
     assert(setHead("b", MyList("a", "c")).contains(MyList("b", "c")))
     assert(setHead("b", MyList("a")).contains(MyList("b")))
-    assert(setHead("b", MyList()).isEmpty)
+    assert(setHead("b", empty.l).isEmpty)
   }
 
   test("drop") {
-    assert(drop(MyList(1, 2, 3, 4, 5), 3) == MyList(4, 5))
+    assert(drop(empty.l, 1) == empty.l)
+    assert(drop(one.l, 1) == empty.l)
+    assert(drop(oneTwoThreeFour.l, 2) == MyList(3, 4))
     assert(drop(MyList(1, 2), 1) == MyList(2))
-    assert(drop(MyList(1, 2), 3) == MyList())
-    assert(drop(MyList(1), 1) == MyList())
-    assert(drop(MyList(), 1) == MyList())
+    assert(drop(MyList(1, 2), 3) == empty.l)
+  }
+
+  test("dropWhile") {
+    assert(dropWhile[Int](empty.l)(_ < 3) == empty.l)
+    assert(dropWhile(one.l)(_ < 3) == empty.l)
+    assert(dropWhile(oneTwoThreeFour.l)(_ < 3) == MyList(3, 4))
+    assert(dropWhile(MyList(1, 2, 3, 4, 1))(_ < 3) == MyList(3, 4, 1))
+    assert(dropWhile(MyList(5))(_ < 3) == MyList(5))
+  }
+
+  test("init") {
+    assert(init(empty.l) == empty.l)
+    assert(init(one.l) == empty.l)
+    assert(init(oneTwoThreeFour.l) == MyList(1, 2, 3))
+  }
+
+  test("length") {
+    assert(length(empty.l) == empty.length)
+    assert(length(one.l) == one.length)
+    assert(length(oneTwoThreeFour.l) == oneTwoThreeFour.length)
+    assert(length2(empty.l) == empty.length)
+    assert(length2(one.l) == one.length)
+    assert(length2(oneTwoThreeFour.l) == oneTwoThreeFour.length)
+  }
+
+  test("foldLeft") {
+    assert(foldLeft(empty.l, 0)(_ + _) == empty.sum)
+    assert(foldLeft(one.l, 0)(_ + _) == one.sum)
+    assert(foldLeft(oneTwoThreeFour.l, 0)(_ + _) == oneTwoThreeFour.sum)
   }
 
 }
