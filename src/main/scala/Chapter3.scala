@@ -79,7 +79,7 @@ object Chapter3 {
     /** Exercise 9: Computes length of list using foldRight */
     def length[A](myList: MyList[Int]): Int = foldRight(myList, 0)((_, i) => i + 1)
 
-    /** Exercise 10: stack-safe foldRight */
+    /** Exercise 10: Stack-safe foldRight */
     @tailrec
     def foldLeft[A, B](myList: MyList[A], z: B)(f: (B, A) => B): B = myList match {
       case Nil => z
@@ -91,7 +91,38 @@ object Chapter3 {
     def product3(myList: MyList[Int]): Int = foldLeft(myList, 1)(_ * _)
     def length2[A](myList: MyList[Int]): Int = foldLeft(myList, 0)((i, _) => i + 1)
 
+    /** Exercise 12: Returns the reverse of a list */
+    def reverse[A](myList: MyList[A]): MyList[A] =
+      foldLeft(myList, MyList[A]())((b, a) => Cons(a, b))
 
+    /** Exercise 14: Appends element to a list */
+    def append[A](myList: MyList[A], element: A): MyList[A] =
+      foldRight(myList, MyList[A](element))(Cons(_, _))
+
+    /** Exercise 15: Concatenates a list of lists into one list */
+    def concat[A](myList: MyList[MyList[A]]): MyList[A] =
+      foldLeft(myList, MyList[A]())((a, b) => foldRight(a, b)(Cons(_,_)))
+
+    /** Exercise 16: Adds 1 to every element of list */
+    def increment(myList: MyList[Int]): MyList[Int] =
+      foldRight(myList, MyList[Int]())((a, b) => Cons(a + 1, b))
+
+    def increment2(myList: MyList[Int]): MyList[Int] =
+      reverse(foldLeft(myList, MyList[Int]())((b, a) => Cons(a + 1, b)))
+
+    /** Exercise 17: Converts all elements to String */
+    def convertToString[A](myList: MyList[A]): MyList[String] =
+      foldRight(myList, MyList[String]())((a, b) => Cons(a.toString, b))
+
+    def convertToString2[A](myList: MyList[A]): MyList[String] =
+      reverse(foldLeft(myList, MyList[String]())((b, a) => Cons(a.toString, b)))
+
+    /** Exercise 18: Map */
+    def map[A, B](myList: MyList[A])(f: A => B): MyList[B] =
+      foldRight(myList, MyList[B]())((a, b) => Cons(f(a), b))
+
+    def map2[A, B](myList: MyList[A])(f: A => B): MyList[B] =
+      reverse(foldLeft(myList, MyList[B]())((b, a) => Cons(f(a), b)))
 
   }
 

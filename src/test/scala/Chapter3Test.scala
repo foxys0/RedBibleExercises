@@ -91,4 +91,51 @@ class Chapter3Test extends AnyFunSuite {
     assert(foldLeft(oneTwoThreeFour.l, 0)(_ + _) == oneTwoThreeFour.sum)
   }
 
+  test("reverse") {
+    assert(reverse(empty.l) == empty.l)
+    assert(reverse(one.l) == MyList(1))
+    assert(reverse(oneTwoThreeFour.l) == MyList(4, 3, 2, 1))
+  }
+
+  test("append") {
+    assert(append(empty.l, 10) == MyList(10))
+    assert(append(one.l, 10) == MyList(1, 10))
+    assert(append(oneTwoThreeFour.l, 10) == MyList(1, 2, 3, 4, 10))
+  }
+
+  test("concat") {
+    assert(concat(MyList(empty.l, empty.l)) == empty.l)
+    assert(concat(MyList(empty.l, one.l)) == one.l)
+    assert(concat(MyList(one.l, empty.l)) == one.l)
+    assert(concat(MyList(one.l, oneTwoThreeFour.l)) == MyList(1, 1, 2, 3, 4))
+  }
+
+  test("increment") {
+    assert(increment(empty.l) == empty.l)
+    assert(increment(one.l) == MyList(2))
+    assert(increment(oneTwoThreeFour.l) == MyList(2, 3, 4, 5))
+    assert(increment2(empty.l) == empty.l)
+    assert(increment2(one.l) == MyList(2))
+    assert(increment2(oneTwoThreeFour.l) == MyList(2, 3, 4, 5))
+  }
+
+  test("convertToString") {
+    assert(convertToString(empty.l) == MyList())
+    assert(convertToString(one.l) == MyList("1"))
+    assert(convertToString(oneTwoThreeFour.l) == MyList("1", "2", "3", "4"))
+    assert(convertToString2(empty.l) == MyList())
+    assert(convertToString2(one.l) == MyList("1"))
+    assert(convertToString2(oneTwoThreeFour.l) == MyList("1", "2", "3", "4"))
+  }
+
+  test("map") {
+    assert(map(empty.l)(_ + 1) == empty.l)
+    assert(map(one.l)(_ + 1) == MyList(2))
+    assert(map(oneTwoThreeFour.l)(_ + 1) == MyList(2, 3, 4, 5))
+    assert(map2(empty.l)(_ + 1) == empty.l)
+    assert(map2(one.l)(_ + 1) == MyList(2))
+    assert(map2(oneTwoThreeFour.l)(_ + 1) == MyList(2, 3, 4, 5))
+  }
+
+
 }
