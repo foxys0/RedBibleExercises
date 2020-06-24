@@ -1,6 +1,6 @@
 import annotation.tailrec
 
-object Chapter3 {
+object Chapter3List {
 
   sealed trait MyList[+A]
 
@@ -125,9 +125,27 @@ object Chapter3 {
     def filter[A](myList: MyList[A])(f: A => Boolean): MyList[A] =
       foldRightViaFoldLeft(myList, MyList[A]())((a, b) => if (f(a)) Cons(a, b) else b)
 
+    /** Exercise 20: FlatMap */
+    def flatMap[A, B](myList: MyList[A])(f: A => MyList[B]): MyList[B] =
+      concat(map(myList)(f))
 
+    /** Exercise 21: Filter implemented via flatMap */
+    def filter2[A](myList: MyList[A])(f: A => Boolean): MyList[A] =
+      flatMap(myList)(a => if(f(a)) MyList(a) else Nil)
 
+    /** Exercise 22: Sums elements from two lists */
+    def sumOfPairs(left: MyList[Int], right: MyList[Int]): MyList[Int] = (left, right) match {
+      case (_, Nil) => Nil
+      case (Nil, _) => Nil
+      case (Cons(lh, lt), Cons(rh, rt)) => Cons(lh + rh, sumOfPairs(lt, rt))
+    }
+
+    /** Exercise 23: Generalized sumOfPairs */
+    def zipWith[A](left: MyList[A], right: MyList[A])(f: (A, A) => A): MyList[A] = (left, right) match {
+      case (_, Nil) => Nil
+      case (Nil, _) => Nil
+      case (Cons(lh, lt), Cons(rh, rt)) => Cons(f(lh, rh), zipWith(lt, rt)(f))
+    }
   }
-
 
 }

@@ -1,8 +1,8 @@
-import Chapter3.MyList
-import Chapter3.MyList._
+import Chapter3List.MyList
+import Chapter3List.MyList._
 import org.scalatest.funsuite.AnyFunSuite
 
-class Chapter3Test extends AnyFunSuite {
+class Chapter3ListTest extends AnyFunSuite {
 
   case class TestList(l: MyList[Int], sum: Int, product: Int, length: Int)
   
@@ -128,16 +128,31 @@ class Chapter3Test extends AnyFunSuite {
     assert(convertToString(oneTwoThreeFour.l) == MyList("1", "2", "3", "4"))
   }
 
-  test("map") {
+  test("map, flatMap") {
     assert(map(empty.l)(_ + 1) == empty.l)
     assert(map(one.l)(_ + 1) == MyList(2))
     assert(map(oneTwoThreeFour.l)(_ + 1) == MyList(2, 3, 4, 5))
+    assert(flatMap(empty.l)(MyList(_, 10)) == empty.l)
+    assert(flatMap(one.l)(MyList(_, 10)) == MyList(1, 10))
+    assert(flatMap(oneTwoThreeFour.l)(MyList(_, 10)) == MyList(1, 10, 2, 10, 3, 10, 4, 10))
   }
 
-  test("filter") {
+  test("filter, filter2") {
     assert(filter(empty.l)(_ < 3) == empty.l)
     assert(filter(one.l)(_ < 3) == one.l)
     assert(filter(oneTwoThreeFour.l)(_ < 3) == MyList(1, 2))
+    assert(filter2(empty.l)(_ < 3) == empty.l)
+    assert(filter2(one.l)(_ < 3) == one.l)
+    assert(filter2(oneTwoThreeFour.l)(_ < 3) == MyList(1, 2))
+  }
+
+  test("sumOfPairs, zipWith") {
+    assert(sumOfPairs(empty.l, empty.l)  == empty.l)
+    assert(sumOfPairs(one.l, one.l)  == MyList(2))
+    assert(sumOfPairs(oneTwoThreeFour.l, oneTwoThreeFour.l)  == MyList(2, 4, 6, 8))
+    assert(zipWith(empty.l, empty.l)(_ + _)  == empty.l)
+    assert(zipWith(one.l, one.l)(_ + _)  == MyList(2))
+    assert(zipWith(oneTwoThreeFour.l, oneTwoThreeFour.l)(_ + _)  == MyList(2, 4, 6, 8))
   }
 
 
