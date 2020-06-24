@@ -85,10 +85,13 @@ class Chapter3Test extends AnyFunSuite {
     assert(length2(oneTwoThreeFour.l) == oneTwoThreeFour.length)
   }
 
-  test("foldLeft") {
+  test("foldLeft, foldRightViaFoldLeft") {
     assert(foldLeft(empty.l, 0)(_ + _) == empty.sum)
     assert(foldLeft(one.l, 0)(_ + _) == one.sum)
     assert(foldLeft(oneTwoThreeFour.l, 0)(_ + _) == oneTwoThreeFour.sum)
+    assert(foldRightViaFoldLeft(empty.l, 0)(_ + _) == empty.sum)
+    assert(foldRightViaFoldLeft(one.l, 0)(_ + _) == one.sum)
+    assert(foldRightViaFoldLeft(oneTwoThreeFour.l, 0)(_ + _) == oneTwoThreeFour.sum)
   }
 
   test("reverse") {
@@ -123,18 +126,18 @@ class Chapter3Test extends AnyFunSuite {
     assert(convertToString(empty.l) == MyList())
     assert(convertToString(one.l) == MyList("1"))
     assert(convertToString(oneTwoThreeFour.l) == MyList("1", "2", "3", "4"))
-    assert(convertToString2(empty.l) == MyList())
-    assert(convertToString2(one.l) == MyList("1"))
-    assert(convertToString2(oneTwoThreeFour.l) == MyList("1", "2", "3", "4"))
   }
 
   test("map") {
     assert(map(empty.l)(_ + 1) == empty.l)
     assert(map(one.l)(_ + 1) == MyList(2))
     assert(map(oneTwoThreeFour.l)(_ + 1) == MyList(2, 3, 4, 5))
-    assert(map2(empty.l)(_ + 1) == empty.l)
-    assert(map2(one.l)(_ + 1) == MyList(2))
-    assert(map2(oneTwoThreeFour.l)(_ + 1) == MyList(2, 3, 4, 5))
+  }
+
+  test("filter") {
+    assert(filter(empty.l)(_ < 3) == empty.l)
+    assert(filter(one.l)(_ < 3) == one.l)
+    assert(filter(oneTwoThreeFour.l)(_ < 3) == MyList(1, 2))
   }
 
 

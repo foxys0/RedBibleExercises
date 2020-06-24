@@ -95,6 +95,9 @@ object Chapter3 {
     def reverse[A](myList: MyList[A]): MyList[A] =
       foldLeft(myList, MyList[A]())((b, a) => Cons(a, b))
 
+    def foldRightViaFoldLeft[A, B](myList: MyList[A], z: B)(f: (A, B) => B): B =
+      foldLeft(reverse(myList), z)((b, a) => f(a, b))
+
     /** Exercise 14: Appends element to a list */
     def append[A](myList: MyList[A], element: A): MyList[A] =
       foldRight(myList, MyList[A](element))(Cons(_, _))
@@ -112,17 +115,17 @@ object Chapter3 {
 
     /** Exercise 17: Converts all elements to String */
     def convertToString[A](myList: MyList[A]): MyList[String] =
-      foldRight(myList, MyList[String]())((a, b) => Cons(a.toString, b))
-
-    def convertToString2[A](myList: MyList[A]): MyList[String] =
-      reverse(foldLeft(myList, MyList[String]())((b, a) => Cons(a.toString, b)))
+      foldRightViaFoldLeft(myList, MyList[String]())((a, b) => Cons(a.toString, b))
 
     /** Exercise 18: Map */
     def map[A, B](myList: MyList[A])(f: A => B): MyList[B] =
-      foldRight(myList, MyList[B]())((a, b) => Cons(f(a), b))
+      foldRightViaFoldLeft(myList, MyList[B]())((a, b) => Cons(f(a), b))
 
-    def map2[A, B](myList: MyList[A])(f: A => B): MyList[B] =
-      reverse(foldLeft(myList, MyList[B]())((b, a) => Cons(f(a), b)))
+    /** Exercise 19: Filter elements unless they satisfy condition */
+    def filter[A](myList: MyList[A])(f: A => Boolean): MyList[A] =
+      foldRightViaFoldLeft(myList, MyList[A]())((a, b) => if (f(a)) Cons(a, b) else b)
+
+
 
   }
 
