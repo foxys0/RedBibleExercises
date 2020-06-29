@@ -1,4 +1,4 @@
-import Chapter4Option.{Option, Some, None}
+import Chapter4Option._
 import org.scalatest.funsuite.AnyFunSuite
 
 class Chapter4OptionTest extends AnyFunSuite {
@@ -6,6 +6,7 @@ class Chapter4OptionTest extends AnyFunSuite {
   private val someInt: Option[Int] = Some(10)
   private val noneInt: Option[Int] = None
   private val default: Int = 0
+  private val oneTwoTree = List(1, 2, 3)
 
   test("map") {
     assert(someInt.map(_ + 2) ==  Some(12))
@@ -38,6 +39,27 @@ class Chapter4OptionTest extends AnyFunSuite {
     assert(someInt.filter2(_ == 10) ==  someInt)
     assert(someInt.filter2(_ == 12) ==  noneInt)
     assert(noneInt.filter2(_ == 10) ==  noneInt)
+  }
+
+  test("variance") {
+    assert(variance(Seq(1, 1, 5, 5)) == Some(4.0))
+    assert(variance(Seq(1, 2, 3, 4)) == Some(1.25))
+  }
+
+  test("map2") {
+    assert(map2(Some(1), Some(2))(_ + _) == Some(3))
+    assert(map2[Int, Int, Int](Some(1), None)(_ + _) == None)
+  }
+
+  test("sequence") {
+    assert(sequence(List(Some(1), Some(2), Some(3))) == Some(oneTwoTree))
+    assert(sequence(List(Some(1), None)) == None)
+    assert(sequence2(List(Some(1), Some(2), Some(3))) == Some(oneTwoTree))
+    assert(sequence2(List(Some(1), None)) == None)
+  }
+
+  test("traverse") {
+    assert(traverse(oneTwoTree)(Some(_)) == Some(oneTwoTree))
   }
 
 }
