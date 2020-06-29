@@ -9,17 +9,11 @@ object Chapter4 {
 
   /** Exercise 3 */
   def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
-    for {
-      aa <- a
-      bb <- b
-    } yield f(aa, bb)
+    for { aa <- a; bb <- b } yield f(aa, bb)
 
   /** Exercise 4 */
   def sequence[A](a: List[Option[A]]): Option[List[A]] = {
-    val list = for {
-      maybeElement <- a
-      element <- maybeElement
-    } yield element
+    val list = for { maybeElement <- a; element <- maybeElement } yield element
 
     if (list.size == a.size) Some(list)
     else None
