@@ -55,6 +55,24 @@ object Chapter5Stream {
       case _ => this
     }
 
+    /** Exercise 3: Returns all starting elements that match a given predicate */
+    def takeWhile(f: A => Boolean): Stream[A] = this match {
+      case Cons(h, t) if f(h()) => cons(h(), t().takeWhile(f))
+      case _ => empty
+    }
+
+    /** Exercise 4: Checks that all elements match a given predicate */
+    def forAll(f: A => Boolean): Boolean = {
+      @tailrec
+      def loop(stream: Stream[A]): Boolean = stream match {
+        case Cons(h, t) if f(h()) => loop(t())
+        case Cons(_, _) => false
+        case Empty => true
+      }
+
+      loop(this)
+    }
+
 
   }
 

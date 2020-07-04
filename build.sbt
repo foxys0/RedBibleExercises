@@ -2,7 +2,7 @@ Global / name := "RedBibleExercises"
 Global / organization := "cz.matejcerny"
 Global / scalaVersion := "2.13.2"
 
-lazy val root = project
+lazy val RedBibleExercises = project
   .in(file("."))
   .settings(
     libraryDependencies ++= Seq(

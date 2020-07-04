@@ -30,5 +30,17 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(oneTwoThree.s.drop(1).toList == List(2, 3))
   }
 
+  test("takeWhile") {
+    assert(empty.s.takeWhile(_ < 2) == empty.s)
+    assert(one.s.takeWhile(_ < 2).toList == one.l)
+    assert(oneTwoThree.s.takeWhile(_ < 2).toList == one.l)
+  }
+
+  test("forAll") {
+    assert(empty.s.forAll(_ < 2))
+    assert(one.s.forAll(_ < 2))
+    assert(!oneTwoThree.s.forAll(_ < 2))
+  }
+
 
 }
