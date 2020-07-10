@@ -6,6 +6,11 @@ object Chapter5Stream {
 
   trait Stream[+A] {
 
+    def foldRight[B](z: => B)(f: (A, => B) => B): B = this match {
+      case Cons(h, t) => f(h(), t().foldRight(z)(f))
+      case _ => z
+    }
+
     def reverse: Stream[A] = {
       @tailrec
       def loop(stream: Stream[A], acc: Stream[A]): Stream[A] = stream match {
@@ -41,11 +46,12 @@ object Chapter5Stream {
 
     def takeTailRec(n: Int): Stream[A] = {
       @tailrec
-      def loop(stream: Stream[A], acc: Stream[A], i: Int): Stream[A] = stream match {
-        case Cons(h, t) if i > 1 => loop(t(), cons(h(), acc), i - 1)
-        case Cons(h, _) if i == 1 => cons(h(), acc)
-        case _ => acc
-      }
+      def loop(stream: Stream[A], acc: Stream[A], i: Int): Stream[A] =
+        stream match {
+          case Cons(h, t) if i > 1 => loop(t(), cons(h(), acc), i - 1)
+          case Cons(h, _) if i == 1 => cons(h(), acc)
+          case _ => acc
+        }
 
       loop(this, empty, n).reverse
     }
@@ -73,6 +79,24 @@ object Chapter5Stream {
       loop(this)
     }
 
+    /** Exercise 5 */
+    def takeWhileViaFoldRight(f: A => Boolean): Stream[A] =
+      foldRight(empty[A])((h, t) => if (f(h)) cons(h, t) else empty)
+
+    /** Exercise 6 */
+    def headOption: Option[A] = foldRight(Option.empty[A])((h, _) => Some(h))
+
+    /** Exercise 7 */
+    def map[B](f: A => B): Stream[B] = foldRight(empty[B])((h, t) => cons(f(h), t))
+
+    def filter(f: A => Boolean): Stream[A] =
+      foldRight(empty[A])((h, t) => if (f(h)) cons(h, t) else t)
+
+    def append[B >: A](s: => Stream[B]): Stream[B] =
+      foldRight(s)((h, t) => cons(h, t))
+
+    def flatMap[B](f: A => Stream[B]): Stream[B] =
+      foldRight(empty[B])((h, t) => f(h).append(t))
 
   }
 
