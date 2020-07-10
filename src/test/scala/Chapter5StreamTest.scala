@@ -1,3 +1,4 @@
+import Chapter5Stream.Stream._
 import Chapter5Stream._
 import org.scalatest.funsuite.AnyFunSuite
 
@@ -73,6 +74,31 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(empty.s.flatMap(Stream(_, 10)) == empty.s)
     assert(one.s.flatMap(Stream(_, 10)).toList == List(1, 10))
     assert(oneTwoThree.s.flatMap(Stream(_, 10)).toList == List(1, 10, 2, 10, 3, 10))
+  }
+
+  test("constant") {
+    assert(constant(1).take(5).toList == List(1, 1, 1, 1, 1))
+    assert(constantLazy(1).take(5).toList == List(1, 1, 1, 1, 1))
+    assert(constantUnfold(1).take(5).toList == List(1, 1, 1, 1, 1))
+  }
+
+  test("from") {
+    assert(from(1).take(3).toList == oneTwoThree.l)
+    assert(fromUnfold(1).take(3).toList == oneTwoThree.l)
+  }
+
+  test("fibs") {
+    assert(fibs.take(1).toList == List(0))
+    assert(fibsUnfold.take(1).toList == List(0))
+    assert(fibs.take(2).toList == List(0, 1))
+    assert(fibsUnfold.take(2).toList == List(0, 1))
+    assert(fibs.take(6).toList == List(0, 1, 1, 2, 3, 5))
+    assert(fibsUnfold.take(6).toList == List(0, 1, 1, 2, 3, 5))
+  }
+
+  test("unfold") {
+    assert(unfold(empty.s)(s => Some(2, s)).take(3).toList == List(2, 2, 2))
+    assert(unfold(empty.s)(_ => None).take(3).toList == List())
   }
 
 

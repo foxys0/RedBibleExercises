@@ -98,6 +98,7 @@ object Chapter5Stream {
     def flatMap[B](f: A => Stream[B]): Stream[B] =
       foldRight(empty[B])((h, t) => f(h).append(t))
 
+
   }
 
   case object Empty extends Stream[Nothing]
@@ -115,6 +116,38 @@ object Chapter5Stream {
     def apply[A](as: A*): Stream[A] =
       if (as.isEmpty) empty
       else cons(as.head, apply(as.tail: _*))
+
+    /** Exercise 8 */
+    def constant[A](a: A): Stream[A] = cons(a, constant(a))
+    def constantLazy[A](a: A): Stream[A] = {
+      lazy val tail: Stream[A] = Cons(() => a, () => tail)
+      tail
+    }
+
+    /** Exercise 9 */
+    def from(n: Int): Stream[Int] = cons(n, from(n + 1))
+
+    /** Exercise 10 */
+    val fibs: Stream[Int] = {
+      def loop(prev: Int, act: Int): Stream[Int] =
+        cons(prev, loop(act, prev + act))
+
+      loop(0, 1)
+    }
+
+    /** Exercise 11 */
+    def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z) match {
+      case Some((a, s)) => cons(a, unfold(s)(f))
+      case None => empty
+    }
+
+    /** Exercise 12 */
+    def constantUnfold[A](a: A): Stream[A] = unfold(empty)(Some(a, _))
+    def fromUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
+    val fibsUnfold: Stream[Int] = unfold((0, 1)) {
+      case (prev, act) => Some(prev, (act, prev + act))
+    }
+
   }
 
 }
