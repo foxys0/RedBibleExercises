@@ -26,6 +26,9 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(empty.s.takeTailRec(1) == empty.s)
     assert(one.s.takeTailRec(1).toList == one.l)
     assert(oneTwoThree.s.takeTailRec(1).toList == one.l)
+    assert(empty.s.takeViaUnfold(1) == empty.s)
+    assert(one.s.takeViaUnfold(1).toList == one.l)
+    assert(oneTwoThree.s.takeViaUnfold(1).toList == one.l)
     assert(empty.s.drop(1) == empty.s)
     assert(one.s.drop(1) == empty.s)
     assert(oneTwoThree.s.drop(1).toList == List(2, 3))
@@ -38,6 +41,9 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(empty.s.takeWhileViaFoldRight(_ < 2) == empty.s)
     assert(one.s.takeWhileViaFoldRight(_ < 2).toList == one.l)
     assert(oneTwoThree.s.takeWhileViaFoldRight(_ < 2).toList == one.l)
+    assert(empty.s.takeWhileViaUnfold(_ < 2) == empty.s)
+    assert(one.s.takeWhileViaUnfold(_ < 2).toList == one.l)
+    assert(oneTwoThree.s.takeWhileViaUnfold(_ < 2).toList == one.l)
   }
 
   test("forAll") {
@@ -56,6 +62,9 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(empty.s.map(_ + 1) == empty.s)
     assert(one.s.map(_ + 1).toList == List(2))
     assert(oneTwoThree.s.map(_ + 1).toList == List(2, 3, 4))
+    assert(empty.s.mapViaUnfold(_ + 1) == empty.s)
+    assert(one.s.mapViaUnfold(_ + 1).toList == List(2))
+    assert(oneTwoThree.s.mapViaUnfold(_ + 1).toList == List(2, 3, 4))
   }
 
   test("filter") {
@@ -79,21 +88,21 @@ class Chapter5StreamTest extends AnyFunSuite {
   test("constant") {
     assert(constant(1).take(5).toList == List(1, 1, 1, 1, 1))
     assert(constantLazy(1).take(5).toList == List(1, 1, 1, 1, 1))
-    assert(constantUnfold(1).take(5).toList == List(1, 1, 1, 1, 1))
+    assert(constantViaUnfold(1).take(5).toList == List(1, 1, 1, 1, 1))
   }
 
   test("from") {
     assert(from(1).take(3).toList == oneTwoThree.l)
-    assert(fromUnfold(1).take(3).toList == oneTwoThree.l)
+    assert(fromViaUnfold(1).take(3).toList == oneTwoThree.l)
   }
 
   test("fibs") {
     assert(fibs.take(1).toList == List(0))
-    assert(fibsUnfold.take(1).toList == List(0))
     assert(fibs.take(2).toList == List(0, 1))
-    assert(fibsUnfold.take(2).toList == List(0, 1))
     assert(fibs.take(6).toList == List(0, 1, 1, 2, 3, 5))
-    assert(fibsUnfold.take(6).toList == List(0, 1, 1, 2, 3, 5))
+    assert(fibsViaUnfold.take(1).toList == List(0))
+    assert(fibsViaUnfold.take(2).toList == List(0, 1))
+    assert(fibsViaUnfold.take(6).toList == List(0, 1, 1, 2, 3, 5))
   }
 
   test("unfold") {

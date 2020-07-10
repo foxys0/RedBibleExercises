@@ -24,14 +24,14 @@ object Chapter5Stream {
     /** Exercise 1 */
     def toList: List[A] = this match {
       case Cons(h, t) => h() :: t().toList
-      case Empty => List.empty
+      case _ => List.empty
     }
 
     def toListTailRec: List[A] = {
       @tailrec
       def loop(stream: Stream[A], list: List[A]): List[A] = stream match {
         case Cons(h, t) => loop(t(), h() :: list)
-        case Empty => list
+        case _ => list
       }
 
       loop(this, List()).reverse
@@ -73,7 +73,7 @@ object Chapter5Stream {
       def loop(stream: Stream[A]): Boolean = stream match {
         case Cons(h, t) if f(h()) => loop(t())
         case Cons(_, _) => false
-        case Empty => true
+        case _ => true
       }
 
       loop(this)
@@ -98,7 +98,24 @@ object Chapter5Stream {
     def flatMap[B](f: A => Stream[B]): Stream[B] =
       foldRight(empty[B])((h, t) => f(h).append(t))
 
+    /** Exercise 13 */
+    def mapViaUnfold[B](f: A => B): Stream[B] = unfold(this) {
+      case Cons(h, t) => Some(f(h()), t())
+      case _ => None
+    }
 
+    def takeViaUnfold(n: Int): Stream[A] = unfold(this) {
+      case Cons(h, t) if n > 1 => Some(h(), t())
+      case Cons(h, _) if n == 1 => Some(h(), empty)
+      case _ => None
+    }
+
+    def takeWhileViaUnfold(f: A => Boolean): Stream[A] = unfold(this) {
+      case Cons(h, t) if f(h()) => Some(h(), t())
+      case _ => None
+    }
+
+    def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
   }
 
   case object Empty extends Stream[Nothing]
@@ -142,9 +159,9 @@ object Chapter5Stream {
     }
 
     /** Exercise 12 */
-    def constantUnfold[A](a: A): Stream[A] = unfold(empty)(Some(a, _))
-    def fromUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
-    val fibsUnfold: Stream[Int] = unfold((0, 1)) {
+    def constantViaUnfold[A](a: A): Stream[A] = unfold(empty)(Some(a, _))
+    def fromViaUnfold(n: Int): Stream[Int] = unfold(n)(s => Some(s, s + 1))
+    val fibsViaUnfold: Stream[Int] = unfold((0, 1)) {
       case (prev, act) => Some(prev, (act, prev + act))
     }
 
