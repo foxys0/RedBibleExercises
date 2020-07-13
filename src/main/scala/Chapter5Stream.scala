@@ -115,7 +115,26 @@ object Chapter5Stream {
       case _ => None
     }
 
-    def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
+    def zipWith[B, C](s2: Stream[B])(f: (A, B) => C): Stream[C] =
+      unfold((this, s2)) {
+        case (Cons(h1, t1), Cons(h2, t2)) => Some(f(h1(), h2()), (t1(), t2()))
+        case _ => None
+      }
+
+    def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] =
+      unfold((this, s2)) {
+        case (Cons(h1, t1), Cons(h2, t2)) => Some((Some(h1()), Some(h2())), (t1(), t2()))
+        case (Cons(h1, t1), Empty) => Some((Some(h1()), Option.empty[B]), (t1(), empty[B]))
+        case (Empty, Cons(h2, t2)) => Some((Option.empty[A], Some(h2())), (empty[A], t2()))
+        case (_, _) => None
+      }
+
+    /** Exercise 15 */
+    def tails: Stream[Stream[A]] = unfold(this) {
+      case Cons(h, t) => Some(Cons(h, t), t())
+      case Empty => None
+    }
+
   }
 
   case object Empty extends Stream[Nothing]

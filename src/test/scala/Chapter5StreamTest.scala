@@ -110,5 +110,26 @@ class Chapter5StreamTest extends AnyFunSuite {
     assert(unfold(empty.s)(_ => None).take(3).toList == List())
   }
 
+  test("zipWith") {
+    assert(empty.s.zipWith(empty.s)(_ + _) == empty.s)
+    assert(one.s.zipWith(one.s)(_ + _).toList == List(2))
+    assert(oneTwoThree.s.zipWith(oneTwoThree.s)(_ + _).toList == List(2, 4, 6))
+    assert(oneTwoThree.s.zipWith(one.s)(_ + _).toList == List(2))
+  }
+
+  test("zipAll") {
+    assert(empty.s.zipAll(empty.s).toList == List())
+    assert(one.s.zipAll(one.s).toList == List((Some(1), Some(1))))
+    assert(oneTwoThree.s.zipAll(one.s).toList == List((Some(1), Some(1)), (Some(2), None), (Some(3), None)))
+  }
+
+  test("tails") {
+    assert(empty.s.tails.toList == List())
+    assert(one.s.tails.toList.head.toList == List(1))
+    assert(oneTwoThree.s.tails.toList.head.toList == List(1, 2, 3))
+    assert(oneTwoThree.s.tails.toList(1).toList == List(2, 3))
+    assert(oneTwoThree.s.tails.toList(2).toList == List(3))
+  }
+
 
 }
