@@ -11,5 +11,10 @@ lazy val RedBibleExercises = project
     )
   )
 
-// run just 10 tests instead of 100
-Test / testOptions += Tests.Argument(TestFrameworks.ScalaCheck, "-s", "10")
+Global / scalacOptions ++= Seq(
+  "-deprecation", // Emit warning and location for usages of deprecated APIs.
+  "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+  "-language:implicitConversions", // Allow definition of implicit functions called views
+  "-language:higherKinds", // Allow higher-kinded types
+  "-Ywarn-unused:imports" // Warn if an import selector is not referenced.
+)
