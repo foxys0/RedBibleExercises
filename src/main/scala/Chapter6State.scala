@@ -3,7 +3,11 @@ import scala.math.pow
 
 object Chapter6State {
 
-  trait RNG { def nextInt: (Int, RNG) }
+  type Rand[+A] = RNG => (A, RNG)
+
+  trait RNG {
+    def nextInt: (Int, RNG)
+  }
 
   case class SimpleRNG(seed: Long) extends RNG {
     def nextInt: (Int, RNG) = {
@@ -12,6 +16,15 @@ object Chapter6State {
       val n = (newSeed >>> 16).toInt
       (n, nextRNG)
     }
+  }
+
+  val int: Rand[Int] = _.nextInt
+
+  def unit[A](a: A): Rand[A] = rng => (a, rng)
+
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] = rng => {
+    val (a, rng2) = s(rng)
+    (f(a), rng2)
   }
 
   /** Exercise 1 */
@@ -59,10 +72,38 @@ object Chapter6State {
       if (i > 0) {
         val (num, rng2) = rng.nextInt
         loop(i - 1, num :: acc, rng2)
-      }
-      else (acc, rng)
+      } else (acc, rng)
 
     loop(count, List.empty, rng)
   }
+
+  /** Exercise 5 */
+  val doubleViaMap: Rand[Double] = map(nonNegativeInt) { num =>
+    val dbl = num / pow(10, num.toString.length - 1)
+    dbl - dbl.floor
+  }
+
+  /** Exercise 6 */
+  def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = rng => {
+    val (a, rng2) = ra(rng)
+    val (b, rng3) = rb(rng2)
+    (f(a, b), rng3)
+  }
+
+  /** Exercise 7 */
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = {
+    @tailrec
+    def loop(list: List[Rand[A]], acc: Rand[List[A]]): Rand[List[A]] =
+      list match {
+        case head :: tail => loop(tail, map2(head, acc)(_ :: _))
+        case Nil => acc
+      }
+
+    loop(fs, unit(List.empty[A]))
+  }
+
+  def sequenceViaFoldRight[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight(unit(List.empty[A]))((f, acc) => map2(f, acc)(_ :: _))
+
 
 }
