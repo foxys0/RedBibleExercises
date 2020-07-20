@@ -6,16 +6,19 @@ object Chapter6StateTest extends Properties("Chapter6") {
 
   property("nonNegativeInt") = forAll { i: Int =>
     val num = nonNegativeInt(SimpleRNG(i))._1
+
     num >= 0 && num <= Int.MaxValue
   }
 
   property("double") = forAll { i: Int =>
     val num = double(SimpleRNG(i))._1
+
     num >= 0 && num < 1
   }
 
   property("doubleViaMap") = forAll { i: Int =>
     val num = doubleViaMap(SimpleRNG(i))._1
+
     num >= 0 && num < 1
   }
 
@@ -77,6 +80,19 @@ object Chapter6StateTest extends Properties("Chapter6") {
     val list = sequenceViaFoldRight(List(double(_), double(_), double(_)))(rng)
 
     dbl1 == list._1.head && dbl2 == list._1(1) && dbl3 == list._1(2)
+  }
+
+  property("flatMap") = forAll { i: Int =>
+    val rng = SimpleRNG(i)
+
+    int(rng) == flatMap(int)(unit)(rng)
+  }
+
+  property("nonNegativeLessThan") = forAll { i: Int =>
+    val constraint = 10
+    val num = nonNegativeLessThan(constraint)(SimpleRNG(i))._1
+
+    num >= 0 && num <= constraint
   }
 
 }

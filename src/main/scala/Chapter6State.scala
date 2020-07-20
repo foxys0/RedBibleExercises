@@ -105,5 +105,23 @@ object Chapter6State {
   def sequenceViaFoldRight[A](fs: List[Rand[A]]): Rand[List[A]] =
     fs.foldRight(unit(List.empty[A]))((f, acc) => map2(f, acc)(_ :: _))
 
+  /** Exercise 8 */
+  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = rng => {
+    val (a, rng2) = f(rng)
+
+    g(a)(rng2)
+  }
+
+  def nonNegativeLessThan(n: Int): Rand[Int] = flatMap(nonNegativeInt) { num =>
+    val mod = num % n
+
+    if (num + (n - 1) - mod >= 0) unit(mod)
+    else nonNegativeLessThan(n)
+  }
+
+  /** Exercise 9 */
+  def mapViaFlatMap[A, B](s: Rand[A])(f: A => B): Rand[B] = ???
+
+  def map2ViaFlatMap[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = ???
 
 }
