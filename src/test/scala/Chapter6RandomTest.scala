@@ -1,8 +1,8 @@
-import Chapter6State._
+import Chapter6Random._
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
-object Chapter6StateTest extends Properties("Chapter6") {
+object Chapter6RandomTest extends Properties("Chapter6") {
 
   property("nonNegativeInt") = forAll { i: Int =>
     val num = nonNegativeInt(SimpleRNG(i))._1
@@ -93,6 +93,13 @@ object Chapter6StateTest extends Properties("Chapter6") {
     val num = nonNegativeLessThan(constraint)(SimpleRNG(i))._1
 
     num >= 0 && num <= constraint
+  }
+
+  property("mapViaFlatMap") = forAll { i: Int =>
+    val rng = SimpleRNG(i)
+    val num = mapViaFlatMap(int)(_ + 1)(rng)._1
+
+    int(rng)._1 + 1 == num
   }
 
 }
