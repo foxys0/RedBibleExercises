@@ -2,7 +2,7 @@ import Chapter6Random._
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
-object Chapter6RandomTest extends Properties("Chapter6") {
+object Chapter6RandomTest extends Properties("Chapter6Random") {
 
   property("nonNegativeInt") = forAll { i: Int =>
     val num = nonNegativeInt(SimpleRNG(i))._1
