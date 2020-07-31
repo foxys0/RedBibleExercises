@@ -34,6 +34,8 @@ object Chapter7Parallelism {
 
   def sortPar(parList: Par[List[Int]]): Par[List[Int]] = map(parList)(_.sorted)
 
+  def equal[A](e: ExecutorService)(p: Par[A], p2: Par[A]): Boolean = p(e).get == p2(e).get
+
   /** Exercise 5 */
   def sequence[A](ps: List[Par[A]]): Par[List[A]] = ps match {
     case pa :: pt => map2(pa, fork(sequence(pt)))(_ :: _)
