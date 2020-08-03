@@ -48,4 +48,27 @@ object Chapter7Parallelism {
   def parFilter[A](l: List[A])(f: A => Boolean): Par[List[A]] =
     map(sequence(l.map(asyncF((a: A) => if (f(a)) List(a) else List()))))(_.flatten)
 
+  /** Exercise 11 */
+  def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    es => if (run(es)(cond).get) t(es) else f(es)
+
+  def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] = es => {
+    val i = run(es)(n).get
+    run(es)(choices(i))
+  }
+
+  def choiceViaChoiceN[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    choiceN(map(cond)(a => if(a) 0 else 1))(List(t, f))
+
+  /** Exercise 12 */
+  def choiceMap[K, V](key: Par[K])(choices: Map[K, Par[V]]): Par[V] = es => {
+    val value = run(es)(key).get()
+    run(es)(choices(value))
+  }
+
+  def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] = es => {
+    val value = run(es)(pa).get()
+    run(es)(choices(value))
+  }
+
 }
