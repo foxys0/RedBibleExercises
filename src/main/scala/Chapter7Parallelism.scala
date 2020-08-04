@@ -66,9 +66,23 @@ object Chapter7Parallelism {
     run(es)(choices(value))
   }
 
-  def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] = es => {
+  // flatMap = chooser
+  def flatMap[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] = es => {
     val value = run(es)(pa).get()
     run(es)(choices(value))
   }
+
+  /** Exercise 13 */
+  def choiceViaChooser[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    flatMap(cond)(a => if(a) t else f)
+
+  def choiceNViaChooser[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
+    flatMap(n)(choices)
+
+  /** Exercise 14 */
+  def join[A](a: Par[Par[A]]): Par[A] = es => run(es)(run(es)(a).get())
+  def joinViaFlatMap[A](a: Par[Par[A]]): Par[A] = flatMap(a)(aa => aa)
+  def flatMapViaJoin[A, B](pa: Par[A])(f: A => Par[B]): Par[B] = join(map(pa)(f))
+
 
 }

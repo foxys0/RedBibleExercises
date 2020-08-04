@@ -30,4 +30,25 @@ class Chapter7ParallelismTest extends AnyFunSuite {
     //assert(equal(newFixedThreadPool(1))(a, fork(a)))
   }
 
+  test("choice, choiceN") {
+    val a = 0
+    val b = 10
+    val pa = unit(a)
+    val pb = unit(b)
+
+    assert(runPar(es)(choice(unit(true))(pa, pb)).get() == a)
+    assert(runPar(es)(choiceViaChooser(unit(false))(pa, pb)).get() == b)
+    assert(runPar(es)(choiceN(pa)(List(pa))).get() == a)
+    assert(runPar(es)(choiceNViaChooser(pa)(List(pa))).get() == a)
+  }
+
+  test("join, flatMap") {
+    val a = 0
+    val pa = unit(a)
+
+    assert(runPar(es)(join(unit(pa))).get() == a)
+    assert(runPar(es)(joinViaFlatMap(unit(pa))).get() == a)
+    assert(runPar(es)(flatMapViaJoin(pa)(unit)).get() == a)
+  }
+
 }
