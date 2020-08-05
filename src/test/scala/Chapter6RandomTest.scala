@@ -1,4 +1,5 @@
-import Chapter6Random._
+import Chapter6Random.RNG._
+import Chapter6Random.SimpleRNG
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
@@ -54,14 +55,14 @@ object Chapter6RandomTest extends Properties("Chapter6Random") {
     val list = ints(5)(rng)._1
 
     ints(0)(rng)._1.isEmpty &&
-      ints(1)(rng)._1.length == 1 &&
-      list.length == 5 && list.distinct.length == list.length
+    ints(1)(rng)._1.length == 1 &&
+    list.length == 5 && list.distinct.length == list.length
   }
 
   property("map2") = forAll { i: Int =>
     val rng = SimpleRNG(i)
 
-    intDouble(rng) == map2(int, doubleViaMap)((_,_))(rng)
+    intDouble(rng) == map2(int, doubleViaMap)((_, _))(rng)
   }
 
   property("sequence") = forAll { i: Int =>

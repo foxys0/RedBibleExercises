@@ -1,5 +1,6 @@
-import Chapter6State._
 import Chapter6Random.SimpleRNG
+import Chapter6State.State
+import Chapter6State.State.unit
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
@@ -20,7 +21,7 @@ object Chapter6StateTest extends Properties("Chapter6State") {
     val state: State[SimpleRNG, Int] = unit(num)
 
     increment(num) == unit(num).map2(state)((a, _) => increment(a)).run(rng)._1 &&
-      increment(num) == unit(num).map2(state)((_, b) => increment(b)).run(rng)._1
+    increment(num) == unit(num).map2(state)((_, b) => increment(b)).run(rng)._1
   }
 
   property("flatMap") = forAll { i: Int =>
@@ -30,6 +31,5 @@ object Chapter6StateTest extends Properties("Chapter6State") {
 
     increment(num) == unit(num).flatMap(incrementS).run(rng)._1
   }
-
 
 }

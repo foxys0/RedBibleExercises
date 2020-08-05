@@ -17,14 +17,27 @@ object Chapter8GenProp {
 
   case class Gen[A](sample: State[RNG, A]) {
 
-    /** Exercise 5 */
     def map[B](f: A => B): Gen[B] = Gen(sample.map(f))
+
+    /** Exercise 6 */
     def flatMap[B](f: A => Gen[B]): Gen[B] = Gen(sample.flatMap(a => f(a).sample))
+    def listOfN(size: Gen[Int]): Gen[List[A]] = size.flatMap(n => Gen.listOfN(n, this))
 
   }
 
   object Gen {
-    def unit[A](a: => A): Gen[A] = Gen(Chapter6State.unit(a))
+
+    /** Exercise 5 */
+    def unit[A](a: => A): Gen[A] = Gen(State.unit(a))
+    def boolean: Gen[Boolean] = Gen(State(RNG.boolean))
+
+    def listOfN[A](n: Int, g: Gen[A]): Gen[List[A]] =
+      Gen(State.sequence(List.fill(n)(g.sample)))
+
+    /** Exercise 7 */
+    def union[A](g1: Gen[A], g2: Gen[A]): Gen[A] =
+      boolean.flatMap(b => if (b) g1 else g2)
+
   }
 
 }

@@ -1,7 +1,5 @@
 object Chapter6State {
 
-  def unit[S, A](a: A): State[S, A] = State((a, _))
-
   case class State[S, +A](run: S => (A, S)) {
 
     /** Exercise 10 */
@@ -18,6 +16,13 @@ object Chapter6State {
       f(a).run(s2)
     }
 
+  }
+
+  object State {
+    def unit[S, A](a: A): State[S, A] = State((a, _))
+
+    def sequence[S, A](l: List[State[S, A]]): State[S, List[A]] =
+      l.reverse.foldLeft(unit[S, List[A]](List()))((acc, f) => f.map2(acc)(_ :: _))
   }
 
 }
