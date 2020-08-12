@@ -13,6 +13,9 @@ object Chapter9Parser {
     def slice[A](p: Parser[A]): Parser[String]
     def product[A, B](p: Parser[A], p2: => Parser[B]): Parser[(A, B)]
     def flatMap[A, B](p: Parser[A])(f: A => Parser[B]): Parser[B]
+    def label[A](msg: String)(p: Parser[A]): Parser[A]
+    def scope[A](msg: String)(p: Parser[A]): Parser[A]
+    def attempt[A](p: Parser[A]): Parser[A]
 
     /** Exercise 1 */
     def map2[A, B, C](p: Parser[A], p2: => Parser[B])(f: (A, B) => C): Parser[C] =
@@ -49,8 +52,27 @@ object Chapter9Parser {
       def product[B](p2: => Parser[B]): Parser[(A, B)] = self.product(p, p2)
       def **[B](p2: => Parser[B]): Parser[(A, B)] = self.product(p, p2)
       def flatMap[B](f: A => Parser[B]): Parser[B] = self.flatMap(p)(f)
+      def label(msg: String): Parser[A] = self.label(msg)(p)
+      def scope(msg: String): Parser[A] = self.scope(msg)(p)
+    }
+  }
+
+  case class Location(input: String, offset: Int = 0) {
+    lazy val line: Int = input.slice(0, offset + 1).count(_ == '\n') + 1
+    lazy val col: Int = input.slice(0, offset + 1).lastIndexOf('\n') match {
+      case -1 => offset + 1
+      case lineStart => offset - lineStart
     }
 
+    def toError(msg: String): ParseError = ParseError(List((this, msg)))
+    def advanceBy(n: Int): Location = copy(offset = offset + n)
+  }
+
+  case class ParseError(stack: List[(Location, String)] = List()) {
+    def push(loc: Location, msg: String): ParseError = copy(stack = (loc, msg) :: stack)
+    def label[A](s: String): ParseError = ParseError(latestLoc.map((_, s)).toList)
+    def latest: Option[(Location, String)] = stack.lastOption
+    def latestLoc: Option[Location] = latest.map(_._1)
   }
 
 }
