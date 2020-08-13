@@ -104,7 +104,7 @@ object Chapter3List {
 
     /** Exercise 15: Concatenates a list of lists into one list */
     def concat[A](list: List[List[A]]): List[A] =
-      foldLeft(list, List[A]())((a, b) => foldRight(a, b)(Cons(_,_)))
+      foldLeft(list, List[A]())((a, b) => foldRight(a, b)(Cons(_, _)))
 
     /** Exercise 16: Adds 1 to every element of list */
     def increment(list: List[Int]): List[Int] =
@@ -131,7 +131,7 @@ object Chapter3List {
 
     /** Exercise 21: Filter implemented via flatMap */
     def filter2[A](list: List[A])(f: A => Boolean): List[A] =
-      flatMap(list)(a => if(f(a)) List(a) else Nil)
+      flatMap(list)(a => if (f(a)) List(a) else Nil)
 
     /** Exercise 22: Sums elements from two lists */
     def sumOfPairs(left: List[Int], right: List[Int]): List[Int] = (left, right) match {

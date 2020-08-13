@@ -11,7 +11,7 @@ object Chapter10MonoidsTest extends Properties("Chapter10Monoids") {
       m.op(a1, m.zero) == a1 &&
       m.op(m.zero, a1) == a1
 
-  property("intAddition") = forAll { (i: Int, j: Int, k: Int) =>
+  property("monoid laws") = forAll { (i: Int, j: Int, k: Int) =>
     monoidLaws(stringMonoid, i.toString, j.toString, k.toString) &&
     monoidLaws(listMonoid[Int], List(i), List(j), List(k)) &&
     monoidLaws(intAddition, i, j, k) &&
@@ -20,5 +20,23 @@ object Chapter10MonoidsTest extends Properties("Chapter10Monoids") {
     monoidLaws(booleanOr, i % 2 == 0, j % 2 == 0, k % 2 == 0) &&
     monoidLaws(optionMonoid[Int], Some(i), Some(j), Some(k))
   }
+
+  property("foldMap") = forAll { (s1: String, s2: String, s3: String) =>
+    val as = List(s1, s2, s3)
+    val result = s"$s1$s2$s3"
+
+    concatenate(as, stringMonoid) == result &&
+    foldMap(as, stringMonoid)(a => a) == result &&
+    foldMapViaFoldRight(as, stringMonoid)(a => a) == result &&
+    foldRightViaFoldMap(as)("")(_ + _) == result &&
+    foldLeftViaFoldMap(as)("")(_ + _) == result &&
+    foldMapV(as.toIndexedSeq, stringMonoid)(a => a) == result &&
+    foldMapV(IndexedSeq[String](), stringMonoid)(a => a) == stringMonoid.zero
+  }
+
+  property("wordCount") =
+    wordCount("") == 0 &&
+      wordCount("Lorem") == 1 &&
+      wordCount("Lorem ipsum dolor sit amet, ") == 5
 
 }
