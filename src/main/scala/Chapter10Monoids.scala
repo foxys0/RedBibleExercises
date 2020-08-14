@@ -108,7 +108,6 @@ object Chapter10Monoids {
         case Part(lStub, words, rStub) => count(lStub) + words + count(rStub)
       }
     }
-
   }
 
 }
