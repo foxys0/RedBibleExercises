@@ -13,12 +13,12 @@ object Chapter10MonoidsTest extends Properties("Chapter10Monoids") {
 
   property("monoid laws") = forAll { (i: Int, j: Int, k: Int) =>
     monoidLaws(stringMonoid, i.toString, j.toString, k.toString) &&
-    monoidLaws(listMonoid[Int], List(i), List(j), List(k)) &&
-    monoidLaws(intAddition, i, j, k) &&
-    monoidLaws(intMultiplication, i, j, k) &&
-    monoidLaws(booleanAnd, i % 2 == 0, j % 2 == 0, k % 2 == 0)
-    monoidLaws(booleanOr, i % 2 == 0, j % 2 == 0, k % 2 == 0) &&
-    monoidLaws(optionMonoid[Int], Some(i), Some(j), Some(k))
+      monoidLaws(listMonoid[Int], List(i), List(j), List(k)) &&
+      monoidLaws(intAddition, i, j, k) &&
+      monoidLaws(intMultiplication, i, j, k) &&
+      monoidLaws(booleanAnd, i % 2 == 0, j % 2 == 0, k % 2 == 0)
+      monoidLaws(booleanOr, i % 2 == 0, j % 2 == 0, k % 2 == 0) &&
+      monoidLaws(optionMonoid[Int], Some(i), Some(j), Some(k))
   }
 
   property("foldMap") = forAll { (s1: String, s2: String, s3: String) =>
@@ -26,17 +26,32 @@ object Chapter10MonoidsTest extends Properties("Chapter10Monoids") {
     val result = s"$s1$s2$s3"
 
     concatenate(as, stringMonoid) == result &&
-    foldMap(as, stringMonoid)(a => a) == result &&
-    foldMapViaFoldRight(as, stringMonoid)(a => a) == result &&
-    foldRightViaFoldMap(as)("")(_ + _) == result &&
-    foldLeftViaFoldMap(as)("")(_ + _) == result &&
-    foldMapV(as.toIndexedSeq, stringMonoid)(a => a) == result &&
-    foldMapV(IndexedSeq[String](), stringMonoid)(a => a) == stringMonoid.zero
+      foldMap(as, stringMonoid)(a => a) == result &&
+      foldMapViaFoldRight(as, stringMonoid)(a => a) == result &&
+      foldRightViaFoldMap(as)("")(_ + _) == result &&
+      foldLeftViaFoldMap(as)("")(_ + _) == result &&
+      foldMapV(as.toIndexedSeq, stringMonoid)(a => a) == result &&
+      foldMapV(IndexedSeq[String](), stringMonoid)(a => a) == stringMonoid.zero
   }
 
   property("wordCount") =
     wordCount("") == 0 &&
       wordCount("Lorem") == 1 &&
       wordCount("Lorem ipsum dolor sit amet, ") == 5
+
+  property("productMonoid") = forAll { (i: Int, j: Int) =>
+    val pMonoid = productMonoid(intAddition, stringMonoid)
+
+    pMonoid.op((i, i.toString), (j, j.toString)) == (i + j, s"$i$j") &&
+      pMonoid.zero == (intAddition.zero, stringMonoid.zero)
+  }
+
+  property("functionMonoid") = forAll { (i: Int, j: Int) =>
+    val f: Int => String = _.toString
+    val g: Int => String = i => s"$i$j"
+    val fMonoid = functionMonoid[Int, String](stringMonoid)
+
+    fMonoid.op(f, g)(i) == s"$i$i$j" && fMonoid.zero(i) == stringMonoid.zero
+  }
 
 }

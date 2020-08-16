@@ -108,6 +108,18 @@ object Chapter10Monoids {
         case Part(lStub, words, rStub) => count(lStub) + words + count(rStub)
       }
     }
+
+    /** Exercise 16 */
+    def productMonoid[A, B](A: Monoid[A], B: Monoid[B]): Monoid[(A, B)] = new Monoid[(A, B)] {
+      def op(a1: (A, B), a2: (A, B)): (A, B) = (A.op(a1._1, a2._1), B.op(a1._2, a2._2))
+      def zero: (A, B) = (A.zero, B.zero)
+    }
+
+    /** Exercise 17 */
+    def functionMonoid[A, B](B: Monoid[B]): Monoid[A => B] = new Monoid[A => B] {
+      def op(a1: A => B, a2: A => B): A => B = a => B.op(a1(a), a2(a))
+      def zero: A => B = _ => B.zero
+    }
   }
 
 }

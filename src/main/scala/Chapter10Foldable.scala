@@ -1,4 +1,5 @@
 import Chapter10Monoids.Monoid
+import Chapter3Tree.{Branch, Leaf, Tree}
 
 object Chapter10Foldable {
 
@@ -33,5 +34,24 @@ object Chapter10Foldable {
     override def foldRight[A, B](as: IndexedSeq[A])(z: B)(f: (A, B) => B): B = as.foldRight(z)(f)
     override def foldLeft[A, B](as: IndexedSeq[A])(z: B)(f: (B, A) => B): B = as.foldLeft(z)(f)
     override def foldMap[A, B](as: IndexedSeq[A])(f: A => B)(mb: Monoid[B]): B = foldMapV(as, mb)(f)
+  }
+
+  /** Exercise 13 */
+  object TreeFoldable extends Foldable[Tree] {
+
+    override def foldRight[A, B](as: Tree[A])(z: B)(f: (A, B) => B): B = as match {
+      case Leaf(value) => f(value, z)
+      case Branch(left, right) => foldRight(left)(foldRight(right)(z)(f))(f)
+    }
+
+    override def foldLeft[A, B](as: Tree[A])(z: B)(f: (B, A) => B): B = as match {
+      case Leaf(value) => f(z, value)
+      case Branch(left, right) => foldLeft(right)(foldLeft(left)(z)(f))(f)
+    }
+
+    override def foldMap[A, B](as: Tree[A])(f: A => B)(mb: Monoid[B]): B = as match {
+      case Leaf(value) => f(value)
+      case Branch(left, right) => mb.op(foldMap(left)(f)(mb), foldMap(right)(f)(mb))
+    }
   }
 }
