@@ -1,6 +1,6 @@
 import java.util.concurrent.Executors.newFixedThreadPool
 
-import Chapter7Parallelism.{run => runPar, _}
+import Chapter7Parallelism.Par.{run => runPar, _}
 import org.scalatest.funsuite.AnyFunSuite
 
 class Chapter7ParallelismTest extends AnyFunSuite {
