@@ -13,6 +13,8 @@ object Chapter11Monads {
     def map2[A, B, C](ma: F[A], mb: F[B])(f: (A, B) => C): F[C] =
       flatMap(ma)(a => map(mb)(b => f(a, b)))
 
+    def product[A, B](ma: F[A], mb: F[B]): F[(A, B)] = map2(ma, mb)((_, _))
+
     /** Exercise 3 */
     def sequence[A](lma: List[F[A]]): F[List[A]] =
       lma.foldRight(unit(List.empty[A]))((ma, mla) => map2(ma, mla)(_ :: _))
@@ -20,6 +22,14 @@ object Chapter11Monads {
     def traverse[A, B](la: List[A])(f: A => F[B]): F[List[B]] =
       la.foldRight(unit(List.empty[B]))((a, mlb) => map2(f(a), mlb)(_ :: _))
 
+    /** Exercise 4 */
+    def replicateM[A](n: Int, ma: F[A]): F[List[A]] = sequence(List.fill(n)(ma))
+
+    /** Exercise 7 */
+    def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] = a => flatMap(f(a))(g)
+
+    /** Exercise 12 */
+    def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(ma => ma)
   }
 
   val genMonad: Monad[Gen] = new Monad[Gen] {
