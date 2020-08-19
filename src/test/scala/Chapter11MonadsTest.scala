@@ -1,4 +1,4 @@
-import Chapter11Monads.{listMonad, optionMonad}
+import Chapter11Monads.{idMonad, listMonad, optionMonad}
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
@@ -25,10 +25,15 @@ object Chapter11MonadsTest extends Properties("Chapter11Monads") {
     val f: Int => Option[Int] = a => Some(a + 1)
     val g: Int => Option[Int] = a => Some(a + 4)
     val h: Int => Option[Int] = a => Some(a - 6)
-    val law: Option[Int] => Boolean = x => flatMap(x)(f).flatMap(g) == flatMap(x)(a => f(a).flatMap(g))
+    val law: Option[Int] => Boolean =
+      x => flatMap(x)(f).flatMap(g) == flatMap(x)(a => f(a).flatMap(g))
 
     law(None) && law(Some(1)) &&
-      compose(compose(f, g), h)(1) == compose(f, compose(g, h))(1)
+    compose(compose(f, g), h)(1) == compose(f, compose(g, h))(1)
+  }
+
+  property("identity") = forAll { (s1: String, s2: String) =>
+    (for { a <- idMonad.unit(s1); b <- idMonad.unit(s2) } yield a + b).value == s1 + s2
   }
 
 }
