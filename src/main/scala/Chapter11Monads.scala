@@ -1,5 +1,6 @@
 import Chapter11Functor.Functor
 import Chapter5Stream.Stream
+import Chapter6State.State
 import Chapter7Parallelism.Par
 import Chapter8GenProp.Gen
 
@@ -68,5 +69,34 @@ object Chapter11Monads {
     def unit[A](a: => A): Id[A] = Id(a)
     def flatMap[A, B](ma: Id[A])(f: A => Id[B]): Id[B] = ma.flatMap(f)
   }
+
+  def stateMonad[S]: Monad[({ type f[x] = State[S, x] })#f] =
+    new Monad[({ type f[x] = State[S, x] })#f] {
+      def unit[A](a: => A): State[S, A] = State(s => (a, s))
+      def flatMap[A, B](ma: State[S, A])(f: A => State[S, B]): State[S, B] = ma.flatMap(f)
+    }
+
+  def getState[S]: State[S, S] = State(s => (s, s))
+  def setState[S](s: S): State[S, Unit] = State(_ => ((), s))
+
+  def zipWithIndex[A](as: List[A]): List[(Int, A)] =
+    as.foldLeft(stateMonad[Int].unit(List[(Int, A)]()))((acc, a) =>
+        for {
+          xs <- acc
+          n <- getState
+          _ <- setState(n + 1)
+        } yield (n, a) :: xs)
+      .run(0)
+      ._1
+      .reverse
+
+  case class Reader[R, A](run: R => A)
+
+  def readerMonad[R]: Monad[({ type f[x] = Reader[R, x] })#f] =
+    new Monad[({ type f[x] = Reader[R, x] })#f] {
+      def unit[A](a: => A): Reader[R, A] = Reader(_ => a)
+      def flatMap[A, B](st: Reader[R, A])(f: A => Reader[R, B]): Reader[R, B] =
+        Reader(r => f(st.run(r)).run(r))
+    }
 
 }
