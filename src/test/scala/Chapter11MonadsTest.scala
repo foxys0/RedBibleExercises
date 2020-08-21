@@ -1,7 +1,4 @@
-import Chapter11Monads.{idMonad, listMonad, optionMonad, stateMonad}
-import Chapter6Random.{RNG, SimpleRNG}
-import Chapter6State.State
-import Chapter6State.State.unit
+import Chapter11Monads.{idMonad, listMonad, optionMonad}
 import org.scalacheck.Prop.forAll
 import org.scalacheck.Properties
 
