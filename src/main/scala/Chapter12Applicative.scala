@@ -1,4 +1,5 @@
 import Chapter11Functor.Functor
+import Chapter11Monads.Monad
 
 object Chapter12Applicative {
 
@@ -23,6 +24,28 @@ object Chapter12Applicative {
     def map2ViaApply[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] =
       apply(mapViaApply(fa)(f.curried))(fb)
 
+    /** Exercise 3 */
+    def map3[A, B, C, D](fa: F[A], fb: F[B], fc: F[C])(f: (A, B, C) => D): F[D] =
+      apply(apply(mapViaApply(fa)(f.curried))(fb))(fc)
+
+    def map4[A, B, C, D, E](fa: F[A], fb: F[B], fc: F[C], fd: F[D])(f: (A, B, C, D) => E): F[E] =
+      apply(apply(apply(mapViaApply(fa)(f.curried))(fb))(fc))(fd)
   }
+
+  val optionApplicative: Applicative[Option] = new Applicative[Option] {
+    def unit[A](a: => A): Option[A] = Option(a)
+    def map2[A, B, C](fa: Option[A], fb: Option[B])(f: (A, B) => C): Option[C] =
+      for { a <- fa; b <- fb } yield f(a, b)
+  }
+
+  /** Exercise 5 */
+  def eitherMonad[E]: Monad[({ type f[x] = Either[E, x] })#f] =
+    new Monad[({ type f[x] = Either[E, x] })#f] {
+      def unit[A](a: => A): Either[E, A] = Right(a)
+      def flatMap[A, B](ma: Either[E, A])(f: A => Either[E, B]): Either[E, B] = ma match {
+        case Left(e) => Left(e)
+        case Right(value) => f(value)
+      }
+    }
 
 }
