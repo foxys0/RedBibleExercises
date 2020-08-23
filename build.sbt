@@ -1,6 +1,6 @@
 Global / name := "RedBibleExercises"
 Global / organization := "cz.matejcerny"
-Global / scalaVersion := "2.13.2"
+Global / scalaVersion := "2.13.3"
 
 lazy val RedBibleExercises = project
   .in(file("."))
