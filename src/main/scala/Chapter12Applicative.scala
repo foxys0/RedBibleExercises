@@ -39,6 +39,12 @@ object Chapter12Applicative {
           (Applicative.this.map2(fa._1, fb._1)(f), G.map2(fa._2, fb._2)(f))
       }
 
+    /** Exercise 12 */
+    def sequenceMap[K, V](ofa: Map[K, F[V]]): F[Map[K, V]] =
+      ofa.foldLeft(unit(Map.empty[K, V])) {
+        case (acc, (k, fv)) => map2(acc, fv)((map, v) => map + (k -> v))
+      }
+
   }
 
   val optionApplicative: Applicative[Option] = new Applicative[Option] {
@@ -75,5 +81,21 @@ object Chapter12Applicative {
           case (Success(a), Success(b)) => Success(f(a, b))
         }
     }
+
+  trait Traverse[F[_]] extends Functor[F] {
+    def traverse[G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]] =
+      sequence(map(fa)(f))
+
+    def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] = traverse(fga)(ga => ga)
+  }
+
+  /** Exercise 13 */
+  val listTraverse: Traverse[List] = new Traverse[List] {
+    def map[A, B](fa: List[A])(f: A => B): List[B] = fa.map(f)
+  }
+
+  val optionTraverse: Traverse[Option] = new Traverse[Option] {
+    def map[A, B](fa: Option[A])(f: A => B): Option[B] = fa.map(f)
+  }
 
 }
