@@ -20,6 +20,8 @@ object Chapter6State {
 
   object State {
     def unit[S, A](a: A): State[S, A] = State((a, _))
+    def get[S]: State[S, S] = State(s => (s, s))
+    def set[S](s: S): State[S, Unit] = State(_ => ((), s))
 
     def sequence[S, A](l: List[State[S, A]]): State[S, List[A]] =
       l.reverse.foldLeft(unit[S, List[A]](List()))((acc, f) => f.map2(acc)(_ :: _))
