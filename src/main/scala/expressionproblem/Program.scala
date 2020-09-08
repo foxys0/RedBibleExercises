@@ -1,24 +1,22 @@
 package expressionproblem
 import expressionproblem.Interpreter.{Evaluate, Print}
 
-import scala.util.chaining._
-
-trait Program[A] {
-  def run: A
+trait Program[F[_], A] {
+  def run: F[A]
 }
 
 object Program extends App {
 
-  def dsl[A](
-    implicit expression: Expression[A],
-    addition: Addition[A],
-    multiplication: Multiplication[A]
-  ): Program[A] = new Program[A] {
-    import addition._
-    import expression._
-    import multiplication._
+  def dsl[F[_], A](
+    implicit L: Literal[F, A],
+    A: Addition[F, A],
+    M: Multiplication[F, A]
+  ): Program[F, A] = new Program[F, A] {
+    import A._
+    import L._
+    import M._
 
-    override def run: A = multiply(
+    override def run: F[A] = multiply(
       add(literal(2), literal(3)),
       literal(4)
     )
@@ -31,15 +29,15 @@ object Program extends App {
       Print.Multiplication.dsl
     )
     .run
-    .tap(println)
+    .foreach(println)
 
   Program
     .dsl(
-      Evaluate.Expression.dsl,
+      Evaluate.Literal.dsl,
       Evaluate.Addition.dsl,
       Evaluate.Multiplication.dsl
     )
     .run
-    .tap(println)
+    .foreach(println)
 
 }
