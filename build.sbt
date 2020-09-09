@@ -2,12 +2,20 @@ Global / name := "RedBibleExercises"
 Global / organization := "cz.matejcerny"
 Global / scalaVersion := "2.13.3"
 
+val CatsVersion = "2.2.0"
+val ScalaTestVersion = "3.1.2"
+val ScalaCheckVersion = "1.14.1"
+
 lazy val RedBibleExercises = project
   .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.1.2" % Test,
-      "org.scalacheck" %% "scalacheck" % "1.14.1" % Test
+      "org.typelevel" %% "cats-core" % CatsVersion,
+      "org.scalatest" %% "scalatest" % ScalaTestVersion % Test,
+      "org.scalacheck" %% "scalacheck" % ScalaCheckVersion % Test
+    ),
+    addCompilerPlugin(
+      "org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full
     )
   )
 
