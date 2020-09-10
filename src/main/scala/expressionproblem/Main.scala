@@ -1,6 +1,7 @@
 package expressionproblem
 
 import cats.Id
+import cats.data.EitherNec
 import expressionproblem.Interpreter.{Evaluate, Print}
 
 import scala.util.chaining._
@@ -8,6 +9,8 @@ import scala.util.chaining._
 object Main extends App {
 
   def line(): Unit = println("—" * 100)
+  def success(s: Any): Unit = println(Console.BLUE + s.toString + Console.RESET)
+  def error(s: Any): Unit = println(Console.RED + s.toString + Console.RESET)
 
   line()
 
@@ -23,7 +26,7 @@ object Main extends App {
     .tap(println)
 
   Program
-    .dsl[Either[String, *], Int](
+    .dsl[EitherNec[String, *], Int](
       Evaluate.Literal.dsl,
       Evaluate.Addition.dsl,
       Evaluate.Multiplication.dsl,
@@ -31,18 +34,23 @@ object Main extends App {
       Evaluate.Negation.dsl
     )
     .run
-    .tap(println)
+    .tap(success)
 
   line()
 
   ProgramDivisionByZero
-    .dsl[Id, String](Print.Literal.dsl, Print.Division.dsl)
+    .dsl[Id, String](Print.Literal.dsl, Print.Addition.dsl, Print.Division.dsl)
     .run
     .tap(println)
 
   ProgramDivisionByZero
-    .dsl[Either[String, *], Int](Evaluate.Literal.dsl, Evaluate.Division.dsl)
+    .dsl[EitherNec[String, *], Int](
+      Evaluate.Literal.dsl,
+      Evaluate.Addition.dsl,
+      Evaluate.Division.dsl)
     .run
-    .tap(println)
+    .tap(error)
+
+  line()
 
 }

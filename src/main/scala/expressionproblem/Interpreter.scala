@@ -1,5 +1,6 @@
 package expressionproblem
 import cats._
+import cats.data.NonEmptyChain
 import cats.syntax.all._
 import expressionproblem.Expression._
 
@@ -12,8 +13,8 @@ object Interpreter {
     }
 
     object Addition {
-      def dsl[F[_]: Apply]: Addition[F, Int] =
-        (o1, o2) => (o1, o2).mapN(_ + _)
+      def dsl[F[_]: Apply: NonEmptyParallel]: Addition[F, Int] =
+        (o1, o2) => (o1, o2).parMapN(_ + _)
     }
 
     object Negation {
@@ -26,12 +27,12 @@ object Interpreter {
     }
 
     object Division {
-      def dsl[F[_]: MonadError[*[_], String]]: Division[F, Int] =
+      def dsl[F[_]: MonadError[*[_], NonEmptyChain[String]]: NonEmptyParallel]: Division[F, Int] =
         (o1, o2) =>
-          (o1, o2).tupled.flatMap {
-            case (_, 0) => "division by zero".raiseError[F, Int]
+          (o1, o2).parTupled.flatMap {
+            case (_, 0) => "division by zero".pure[NonEmptyChain].raiseError[F, Int]
             case (a1, a2) if a1 % a2 == 0 => (a1 / a2).pure[F]
-            case _ => "division with rest".raiseError[F, Int]
+            case _ => "division with rest".pure[NonEmptyChain].raiseError[F, Int]
         }
     }
 

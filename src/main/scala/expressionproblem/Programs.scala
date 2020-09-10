@@ -35,12 +35,16 @@ object Program extends App {
 
 object ProgramDivisionByZero extends App {
 
-  def dsl[F[_], A](implicit L: Literal[F, A], D: Division[F, A]): Program[F, A] =
+  def dsl[F[_], A](implicit L: Literal[F, A], A: Addition[F, A], D: Division[F, A]): Program[F, A] =
     new Program[F, A] {
+      import A._
       import D._
       import L._
 
-      override def run: F[A] = divide(literal(10), literal(0))
+      override def run: F[A] = add(
+        divide(literal(10), literal(0)),
+        divide(literal(10), literal(3))
+      )
     }
 
 }
